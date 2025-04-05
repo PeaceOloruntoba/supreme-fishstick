@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, Button, Alert } from "react-native";
 import { Camera } from "expo-camera";
-import { useNavigation } from "@react-navigation/native"; // If using react-navigation
+import { useNavigation } from "@react-navigation/native";
+import * as api from "../api/api"; // Assuming you have a general API file
 
 const BarcodeScannerScreen = () => {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
-  const [barcodeData, setBarcodeData] = useState(null);
-  const navigation = useNavigation(); // If using react-navigation
+  const navigation = useNavigation();
 
   useEffect(() => {
     (async () => {
@@ -23,27 +23,53 @@ const BarcodeScannerScreen = () => {
     return <Text>No access to camera</Text>;
   }
 
-  const handleBarCodeScanned = ({ type, data }) => {
+  const handleBarCodeScanned = async ({ type, data }) => {
     setScanned(true);
-    setBarcodeData({ type, data });
-    Alert.alert(
-      "Barcode Scanned!",
-      `Type: ${type}\nData: ${data}`,
-      [
-        { text: "OK", onPress: () => setScanned(false) },
-        {
-          text: "Use Data",
-          onPress: () => {
-            // Save or pass this barcodeData to the rest of your app
-            console.log("Barcode Data:", { type, data });
-            // You might navigate to another screen to display or use this data
-            // navigation.navigate('SomeOtherScreen', { barcode: { type, data } });
-            setScanned(false);
-          },
-        },
-      ],
-      { cancelable: false }
-    );
+    console.log("Barcode data:", { type, data });
+
+    // Assuming the barcode data contains something like:
+    // "restaurantId=123&tableId=456&aiAgentId=789"
+    const params = data.split("&").reduce((acc, item) => {
+      const [key, value] = item.split("=");
+      acc[key] = value;
+      return acc;
+    }, {});
+
+    const { restaurantId, tableId, aiAgentId } = params;
+
+    if (restaurantId && tableId && aiAgentId) {
+      try {
+        // Make the getUser request to your backend
+        const userResponse = await api.getUser({
+          restaurantId: restaurantId,
+          tableId: tableId,
+          barcodeData: data, // You might send the raw barcode data too
+        });
+
+        console.log("getUser response:", userResponse.data);
+
+        // Navigate to the AI screen and pass the necessary data
+        navigation.navigate("AIScreen", {
+          restaurant_id: restaurantId,
+          table_id: tableId,
+          ai_agent_id: aiAgentId,
+          userData: userResponse.data, // Pass the user data received
+        });
+      } catch (error) {
+        console.error(
+          "Error fetching user data:",
+          error.response ? error.response.data : error.message
+        );
+        Alert.alert("Error", "Failed to retrieve user information.");
+        setScanned(false); // Allow scanning again
+      }
+    } else {
+      Alert.alert(
+        "Invalid Barcode",
+        "The scanned barcode does not contain the required information."
+      );
+      setScanned(false); // Allow scanning again
+    }
   };
 
   return (
