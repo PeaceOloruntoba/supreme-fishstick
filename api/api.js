@@ -21,12 +21,13 @@ export const getUser = async (restaurantId) => {
   }
 };
 
-export const sendChatMessage = async (message) => {
+export const sendChatMessage = async (setup) => {
+  const { message, ai_agent_id } = setup;
   try {
     const token = await AsyncStorage.getItem("authToken");
     const response = await axios.post(
       `${API_BASE_URL}/ai/chat`,
-      { message },
+      { ai_agent_id, message },
       {
         headers: {
           "Content-Type": "application/json",
@@ -34,8 +35,10 @@ export const sendChatMessage = async (message) => {
         },
       }
     );
+    console.log(response);
     return response;
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };
