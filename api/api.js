@@ -1,15 +1,100 @@
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const API_BASE_URL = "https://localhost:5555/api/v1";
+const API_BASE_URL = "https://nikita-backend.onrender.com/api/v1";
 
-export const getUser = async (userData) => {
+export const getUser = async (restaurantId) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/auth/user`, userData);
+    const token = await AsyncStorage.getItem("authToken");
+    const response = await axios.post(
+      `${API_BASE_URL}/profile/restaurants/${restaurantId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      }
+    );
     return response;
   } catch (error) {
     throw error;
   }
 };
 
+export const sendChatMessage = async (message) => {
+  try {
+    const token = await AsyncStorage.getItem("authToken");
+    const response = await axios.post(
+      `${API_BASE_URL}/ai/chat`,
+      { message },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
 
-// You might have other API calls here, e.g., for fetching data using the token
+export const sendAudioMessage = async (message) => {
+  try {
+    const token = await AsyncStorage.getItem("authToken");
+    const response = await axios.post(
+      `${API_BASE_URL}/ai/audio-chat`,
+      { message },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getChatHistory = async (threadId) => {
+  try {
+    const token = await AsyncStorage.getItem("authToken");
+    const response = await axios.get(`${API_BASE_URL}/ai/chat-messages`, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const postReview = async (message) => {
+  try {
+    const token = await AsyncStorage.getItem("authToken");
+    const response = await axios.post(
+      `${API_BASE_URL}/ai/audio-chat`,
+      { message },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export default {
+  getUser,
+  sendChatMessage,
+  sendAudioMessage,
+  getChatHistory,
+};
