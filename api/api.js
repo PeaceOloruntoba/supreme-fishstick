@@ -6,12 +6,12 @@ const API_BASE_URL = "https://nikita-backend.onrender.com/api/v1";
 export const getUser = async (restaurantId) => {
   try {
     const token = await AsyncStorage.getItem("authToken");
-    const response = await axios.post(
-      `${API_BASE_URL}/profile/restaurants/${restaurantId}`,
+    const response = await axios.get(
+      `${API_BASE_URL}/profile/get/${restaurantId}`,
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
+          Authorization: `Bearer ${token}`,
         },
       }
     );
@@ -59,7 +59,7 @@ export const sendAudioMessage = async (message) => {
   }
 };
 
-export const getChatHistory = async (threadId) => {
+export const getChatHistory = async () => {
   try {
     const token = await AsyncStorage.getItem("authToken");
     const response = await axios.get(`${API_BASE_URL}/ai/chat-messages`, {
@@ -97,4 +97,5 @@ export default {
   sendChatMessage,
   sendAudioMessage,
   getChatHistory,
+  postReview,
 };

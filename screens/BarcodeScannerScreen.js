@@ -1,34 +1,46 @@
-import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, Button, Alert } from "react-native";
-import { Camera, CameraType } from "expo-camera";
+import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
+import { useState, useEffect } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import * as api from "../api/api";
 
 const BarcodeScannerScreen = () => {
-  const [hasPermission, setHasPermission] = useState(null);
+  const [hasPermission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
+  const [loadingUser, setLoadingUser] = useState(false);
   const navigation = useNavigation();
 
-  useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === "granted");
-    })();
-  }, []);
-
-  if (hasPermission === null) {
-    return <Text>Requesting camera permission</Text>;
+  if (!hasPermission) {
+    // Camera permissions are still loading
+    return <View />;
   }
-  if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
+
+  if (!hasPermission.granted) {
+    // Camera permissions are not granted yet
+    return (
+      <View style={styles.container}>
+        <Text style={{ textAlign: "center", paddingBottom: 10 }}>
+          We need your permission to show the camera
+        </Text>
+        <Button onPress={requestPermission} title="grant permission" />
+      </View>
+    );
   }
 
   const handleBarCodeScanned = async ({ type, data }) => {
+    if (scanned || loadingUser) {
+      return;
+    }
     setScanned(true);
     console.log("Barcode data:", { type, data });
 
-    // Assuming the barcode data contains something like:
-    // "restaurantId=123&tableId=456&aiAgentId=789"
     const params = data.split("&").reduce((acc, item) => {
       const [key, value] = item.split("=");
       acc[key] = value;
@@ -39,52 +51,50 @@ const BarcodeScannerScreen = () => {
     const tableId = params?.tableId ?? null;
     const aiAgentId = params?.aiAgentId ?? null;
 
-    if (restaurantId && tableId && aiAgentId) {
+    if (restaurantId) {
+      setLoadingUser(true);
       try {
-        // Make the getUser request to your backend
-        const userResponse = await api.getUser({
-          restaurantId: restaurantId,
-          tableId: tableId,
-          barcodeData: data, // You might send the raw barcode data too
-        });
-
-        console.log("getUser response:", userResponse.data);
-
-        // Navigate to the AI screen and pass the necessary data
+        const userResponse = await api.getUser(restaurantId);
+        console.log("getUser response:", userResponse?.data);
+        setLoadingUser(false);
         navigation.navigate("AIScreen", {
           restaurant_id: restaurantId,
-          table_id: tableId,
-          ai_agent_id: aiAgentId,
-          userData: userResponse.data, // Pass the user data received
+          table_id: params?.tableId,
+          ai_agent_id: params?.aiAgentId,
+          userData: userResponse?.data,
         });
       } catch (error) {
-        console.error(
-          "Error fetching user data:",
-          error.response ? error.response.data : error.message
-        );
-        Alert.alert("Error", "Failed to retrieve user information.");
-        setScanned(false); // Allow scanning again
+        console.error("Error fetching user data:", error);
+        setLoadingUser(false);
+        Alert.alert("Error", "Failed to retrieve restaurant information.");
+        setScanned(false);
       }
     } else {
       Alert.alert(
         "Invalid Barcode",
-        "The scanned barcode does not contain the required information."
+        "The scanned barcode does not contain the required restaurant ID."
       );
-      setScanned(false); // Allow scanning again
+      setScanned(false);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Camera
+      <CameraView
         style={StyleSheet.absoluteFillObject}
-        type={CameraType.back}
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+        type={CameraType}
+        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
       />
-      {scanned && (
+      {loadingUser && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+          <Text style={styles.loadingText}>Fetching Restaurant Info...</Text>
+        </View>
+      )}
+      {scanned && !loadingUser && (
         <Button title={"Tap to Scan Again"} onPress={() => setScanned(false)} />
       )}
-      {!scanned && (
+      {!scanned && !loadingUser && (
         <View style={styles.instructionContainer}>
           <Text style={styles.instructionText}>
             Point the camera at the barcode
@@ -98,8 +108,7 @@ const BarcodeScannerScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: "column",
-    justifyContent: "flex-end",
+    justifyContent: "center", // Adjusted to center content when permission is loading/denied
   },
   instructionContainer: {
     backgroundColor: "rgba(0,0,0,0.7)",
@@ -110,6 +119,17 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     textAlign: "center",
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 10,
+    color: "white",
+    fontSize: 16,
   },
 });
 
