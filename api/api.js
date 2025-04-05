@@ -73,11 +73,11 @@ export const getChatHistory = async (threadId) => {
   }
 };
 
-export const postReview = async (message) => {
+export const postReview = async (message, restaurantId) => {
   try {
     const token = await AsyncStorage.getItem("authToken");
     const response = await axios.post(
-      `${API_BASE_URL}/ai/audio-chat`,
+      `${API_BASE_URL}/post-review/${restaurantId}`,
       { message },
       {
         headers: {
