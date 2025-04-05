@@ -43,7 +43,7 @@ const AIScreen = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:5000/api/ai/chat", {
+      const response = await axios.post("http://localhost:5555/api/ai/chat", {
         prompt: input,
         restaurant_id,
         table_id,
@@ -67,7 +67,7 @@ const AIScreen = () => {
 
   return (
     <ImageBackground
-      source={require("../assets/chat-bg.png")} // Replace with your actual image path
+      source={require("../assets/ai.png")}
       style={styles.backgroundImage}
       resizeMode="cover"
     >
