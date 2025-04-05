@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://localhost:5555/api/v1/auth";
+const API_BASE_URL = "https://nikita-backend.onrender.com/api/v1/auth";
 
 export const signup = async (userData) => {
   try {
@@ -14,6 +14,15 @@ export const signup = async (userData) => {
 export const login = async (credentials) => {
   try {
     const response = await axios.post(`${API_BASE_URL}/login`, credentials);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getUser = async (credentials) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/user`, credentials);
     return response;
   } catch (error) {
     throw error;

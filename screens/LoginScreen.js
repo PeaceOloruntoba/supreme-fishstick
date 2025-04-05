@@ -22,9 +22,14 @@ const LoginScreen = () => {
     try {
       const response = await authApi.login(userData);
       console.log("Login successful:", response.data);
-      // Save the token and user data
-      // Navigate to the barcode scanner screen
-      navigation.navigate("BarcodeScanner"); // If using react-navigation
+      if (response.data && response.data.token) {
+        await AsyncStorage.setItem("authToken", response.data.token);
+        console.log("Token saved successfully!");
+        navigation.navigate("BarcodeScanner");
+      } else {
+        Alert.alert("Login Successful", "Logged in, but no token received.");
+        navigation.navigate("BarcodeScanner"); // Or wherever appropriate
+      }
     } catch (error) {
       console.error(
         "Login error:",

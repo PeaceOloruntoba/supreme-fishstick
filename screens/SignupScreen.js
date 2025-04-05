@@ -1,22 +1,16 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  Button,
-  Alert,
-} from "react-native";
-import { CheckBoxComponent } from "@react-native-community/checkbox";
+import { StyleSheet, Text, View, TextInput, Button, Alert } from "react-native";
+import CheckBox from "@react-native-community/checkbox"; // Standard import for CheckBox
 import { useNavigation } from "@react-navigation/native";
 import * as authApi from "../api/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SignupScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(false);
-  const navigation = useNavigation(); // If using react-navigation
+  const navigation = useNavigation();
 
   const handleSignup = async () => {
     if (!email || !password || !confirmPassword) {
@@ -41,10 +35,17 @@ const SignupScreen = () => {
     try {
       const response = await authApi.signup(userData);
       console.log("Signup successful:", response.data);
-      // Save the token (if provided) and user data
-      // You might use AsyncStorage or a context provider for this
-      // Navigate to the barcode scanner screen
-      navigation.navigate("BarcodeScanner");
+      if (response.data && response.data.token) {
+        await AsyncStorage.setItem("authToken", response.data.token);
+        console.log("Token saved successfully!");
+        navigation.navigate("BarcodeScanner");
+      } else {
+        Alert.alert(
+          "Signup Successful",
+          "Account created, but no token received."
+        );
+        navigation.navigate("Login");
+      }
     } catch (error) {
       console.error(
         "Signup error:",
@@ -85,7 +86,7 @@ const SignupScreen = () => {
         secureTextEntry
       />
       <View style={styles.termsContainer}>
-        <CheckBoxComponent value={agreeTerms} onValueChange={setAgreeTerms} />
+        <CheckBox value={agreeTerms} onValueChange={setAgreeTerms} />
         <Text style={styles.termsText}>Agree to terms and conditions</Text>
       </View>
       <Button title="Sign Up" onPress={handleSignup} />
