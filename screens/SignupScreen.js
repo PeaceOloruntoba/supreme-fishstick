@@ -5,11 +5,11 @@ import {
   View,
   TextInput,
   Button,
-  CheckBox,
   Alert,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native"; // If using react-navigation
-import * as authApi from "../api/auth"; // Assuming you have an auth API file
+import { CheckBoxComponent } from "@react-native-community/checkbox";
+import { useNavigation } from "@react-navigation/native";
+import * as authApi from "../api/auth";
 
 const SignupScreen = () => {
   const [email, setEmail] = useState("");
@@ -35,7 +35,7 @@ const SignupScreen = () => {
     const userData = {
       email,
       password,
-      role: "user", // Hardcoded role
+      role: "user",
     };
 
     try {
@@ -44,7 +44,7 @@ const SignupScreen = () => {
       // Save the token (if provided) and user data
       // You might use AsyncStorage or a context provider for this
       // Navigate to the barcode scanner screen
-      navigation.navigate("BarcodeScanner"); // If using react-navigation
+      navigation.navigate("BarcodeScanner");
     } catch (error) {
       console.error(
         "Signup error:",
@@ -85,13 +85,13 @@ const SignupScreen = () => {
         secureTextEntry
       />
       <View style={styles.termsContainer}>
-        <CheckBox value={agreeTerms} onValueChange={setAgreeTerms} />
+        <CheckBoxComponent value={agreeTerms} onValueChange={setAgreeTerms} />
         <Text style={styles.termsText}>Agree to terms and conditions</Text>
       </View>
       <Button title="Sign Up" onPress={handleSignup} />
       <Button
         title="Already have an account? Log In"
-        onPress={() => navigation.navigate("Login")} // If using react-navigation
+        onPress={() => navigation.navigate("Login")}
       />
     </View>
   );

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, Button, Alert } from "react-native";
 import { Camera } from "expo-camera";
 import { useNavigation } from "@react-navigation/native";
-import * as api from "../api/api"; // Assuming you have a general API file
+import * as api from "../api/api";
 
 const BarcodeScannerScreen = () => {
   const [hasPermission, setHasPermission] = useState(null);

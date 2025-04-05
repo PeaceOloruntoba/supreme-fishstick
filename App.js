@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import SignupScreen from "./screens/SignupScreen";
 import LoginScreen from "./screens/LoginScreen";
 import BarcodeScannerScreen from "./screens/BarcodeScannerScreen";
+import AIScreen from "./screens/AIScreen"; // Import the new screen
 
 const Stack = createNativeStackNavigator();
 
@@ -15,7 +16,7 @@ export default function App() {
         <Stack.Screen name="Signup" component={SignupScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="BarcodeScanner" component={BarcodeScannerScreen} />
-        {/* Add other screens here */}
+        <Stack.Screen name="AIScreen" component={AIScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
