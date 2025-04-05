@@ -11,6 +11,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import * as authApi from "../api/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -24,31 +25,31 @@ const LoginScreen = () => {
       return;
     }
 
-    const userData = {
-      email,
-      password,
-    };
+    const userData = { email, password };
+    console.log(userData);
 
     try {
       setLoading(true);
+      console.log("Logging in");
       const response = await authApi.login(userData);
-      console.log("Login successful:", response.data);
-      if (response.data?.token) {
+      console.log(response);
+
+      if (!response || !response.data) {
+        throw new Error("Invalid response from server");
+      }
+
+      if (response.data.token) {
         await AsyncStorage.setItem("authToken", response.data.token);
-        console.log("Token saved successfully!");
         navigation.navigate("BarcodeScanner");
       } else {
         Alert.alert("Login Successful", "Logged in, but no token received.");
         navigation.navigate("BarcodeScanner");
       }
     } catch (error) {
-      console.error(
-        "Login error:",
-        error.response ? error.response.data : error.message
-      );
+      console.log("Login error:", error);
       Alert.alert(
         "Login Failed",
-        error.response?.data?.message || "Invalid credentials"
+        error.response?.data?.message || error.message || "Something went wrong"
       );
     } finally {
       setLoading(false);
@@ -59,33 +60,47 @@ const LoginScreen = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Log In</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        placeholderTextColor="#ffffff99"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
+      {/* Email Field */}
+      <View style={styles.inputContainer}>
+        <Icon name="envelope" size={18} color="#fff" style={styles.icon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          placeholderTextColor="#ffffff99"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+      </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        placeholderTextColor="#ffffff99"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+      {/* Password Field */}
+      <View style={styles.inputContainer}>
+        <Icon name="lock" size={20} color="#fff" style={styles.icon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          placeholderTextColor="#ffffff99"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+      </View>
 
+      {/* Login Button */}
       {loading ? (
-        <ActivityIndicator size="large" color="#fff" />
+        <ActivityIndicator
+          size="large"
+          color="#fff"
+          style={{ marginTop: 10 }}
+        />
       ) : (
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Log In</Text>
         </TouchableOpacity>
       )}
 
+      {/* Sign Up Link */}
       <View style={styles.cond}>
         <Text style={styles.whiteText}>Don’t have an account? </Text>
         <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
@@ -110,13 +125,22 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
   },
-  input: {
-    width: "100%",
-    padding: 12,
-    marginVertical: 10,
-    borderWidth: 1,
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
     borderColor: "#6c1233",
+    borderWidth: 1,
     borderRadius: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    marginVertical: 10,
+    width: "100%",
+  },
+  icon: {
+    marginRight: 10,
+  },
+  input: {
+    flex: 1,
     color: "#fff",
   },
   button: {

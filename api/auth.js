@@ -1,10 +1,13 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://nikita-backend.onrender.com/api/v1/auth";
+const axiosInstance = axios.create({
+  baseURL: "https://nikita-backend.onrender.com/api/v1/auth",
+  timeout: 15000, // 15 seconds
+});
 
 export const signup = async (userData) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/register`, userData);
+    const response = await axiosInstance.post("/register", userData);
     return response;
   } catch (error) {
     throw error;
@@ -13,7 +16,7 @@ export const signup = async (userData) => {
 
 export const login = async (credentials) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/login`, credentials);
+    const response = await axiosInstance.post("/login", credentials);
     return response;
   } catch (error) {
     throw error;
@@ -22,11 +25,9 @@ export const login = async (credentials) => {
 
 export const getUser = async (credentials) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/user`, credentials);
+    const response = await axiosInstance.post("/user", credentials);
     return response;
   } catch (error) {
     throw error;
   }
 };
-
-// You might have other API calls here, e.g., for fetching data using the token

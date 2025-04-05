@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, Button, Alert } from "react-native";
-import { Camera } from "expo-camera";
+import { Camera, CameraType } from "expo-camera";
 import { useNavigation } from "@react-navigation/native";
 import * as api from "../api/api";
 
@@ -35,7 +35,9 @@ const BarcodeScannerScreen = () => {
       return acc;
     }, {});
 
-    const { restaurantId, tableId, aiAgentId } = params;
+    const restaurantId = params?.restaurantId ?? null;
+    const tableId = params?.tableId ?? null;
+    const aiAgentId = params?.aiAgentId ?? null;
 
     if (restaurantId && tableId && aiAgentId) {
       try {
@@ -76,7 +78,7 @@ const BarcodeScannerScreen = () => {
     <View style={styles.container}>
       <Camera
         style={StyleSheet.absoluteFillObject}
-        type={Camera.Constants.Type.back}
+        type={CameraType.back}
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
       />
       {scanned && (
