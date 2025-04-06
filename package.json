@@ -1,5 +1,5 @@
 {
-  "name": "supreme-fishstick",
+  "name": "Annawine AI",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.23.1",
-    "@react-native-community/checkbox": "^0.5.17",
     "@react-navigation/native": "^7.1.5",
     "@react-navigation/native-stack": "^7.3.9",
     "axios": "^1.8.4",

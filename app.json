@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "supreme-fishstick",
-    "slug": "supreme-fishstick",
+    "name": "Annawine AI",
+    "slug": "Annawine AI",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -41,11 +41,6 @@
       "eas": {
         "projectId": "8b4bbeb1-b81f-4f09-ab44-2d65c5b7526b"
       }
-    },
-  "doctor": {
-    "reactNativeDirectoryCheck": {
-      "exclude": ["expo-checkbox"]
     }
   }
   }
-}
