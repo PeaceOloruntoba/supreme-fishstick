@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from "react-native";
-import CheckBox from "expo-checkbox";
+import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import * as authApi from "../api/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -102,11 +102,13 @@ const SignupScreen = () => {
       />
 
       <View style={styles.termsContainer}>
-        <CheckBox
-          value={agreeTerms}
-          onValueChange={setAgreeTerms}
-          color={agreeTerms ? "#6c1233" : undefined}
-        />
+        <TouchableOpacity onPress={() => setAgreeTerms(!agreeTerms)}>
+          <Ionicons
+            name={agreeTerms ? "checkbox" : "square-outline"}
+            size={24}
+            color="#6c1233"
+          />
+        </TouchableOpacity>
         <Text style={styles.termsText}>Agree to terms and conditions</Text>
       </View>
 

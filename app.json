@@ -19,7 +19,12 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.peaceoloruntoba.supremefishstick"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -28,9 +33,19 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow Supreme Fishstick to access your camera",
+          "cameraPermission": "Allow Supreme Fishstick to access your camera"
         }
       ]
     ],
+    "extra": {
+      "eas": {
+        "projectId": "8b4bbeb1-b81f-4f09-ab44-2d65c5b7526b"
+      }
+    },
+  "doctor": {
+    "reactNativeDirectoryCheck": {
+      "exclude": ["expo-checkbox"]
+    }
+  }
   }
 }
