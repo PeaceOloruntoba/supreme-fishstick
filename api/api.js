@@ -15,8 +15,10 @@ export const getUser = async (restaurantId) => {
         },
       }
     );
+    console.log(response);
     return response;
   } catch (error) {
+    console.log(error.response);
     throw error;
   }
 };
