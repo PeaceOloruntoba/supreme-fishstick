@@ -18,12 +18,10 @@ const BarcodeScannerScreen = () => {
   const navigation = useNavigation();
 
   if (!hasPermission) {
-    // Camera permissions are still loading
     return <View />;
   }
 
   if (!hasPermission.granted) {
-    // Camera permissions are not granted yet
     return (
       <View style={styles.container}>
         <Text style={{ textAlign: "center", paddingBottom: 10 }}>
@@ -39,7 +37,6 @@ const BarcodeScannerScreen = () => {
       return;
     }
     setScanned(true);
-    console.log("Barcode data:", { type, data });
 
     const params = data.split("&").reduce((acc, item) => {
       const [key, value] = item.split("=");
@@ -55,7 +52,7 @@ const BarcodeScannerScreen = () => {
       setLoadingUser(true);
       try {
         const userResponse = await api.getUser(restaurantId);
-        console.log("getUser response:", userResponse?.data);
+        console.log("getUser response:", userResponse);
         setLoadingUser(false);
         navigation.navigate("AIScreen", {
           restaurant_id: restaurantId,

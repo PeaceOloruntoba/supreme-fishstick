@@ -56,10 +56,7 @@ const SignupScreen = () => {
         navigation.navigate("Login");
       }
     } catch (error) {
-      console.error(
-        "Signup error:",
-        error.response ? error.response.data : error.message
-      );
+      console.error("Signup error:", error);
       Alert.alert(
         "Signup Failed",
         error.response?.data?.message || "Something went wrong"
