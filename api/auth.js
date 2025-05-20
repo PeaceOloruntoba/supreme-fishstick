@@ -8,8 +8,10 @@ const axiosInstance = axios.create({
 export const signup = async (userData) => {
   try {
     const response = await axiosInstance.post("/register", userData);
+    console.log(response);
     return response;
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };
